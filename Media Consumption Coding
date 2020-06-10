@@ -1,0 +1,60 @@
+# Code to code dummies for media consumption
+# Last Modified : 5/22/2020
+
+library(readxl)
+library(stringr)
+library(tm)
+Data <- read_excel("C:/Users/hemra/Downloads/Data.xlsx")
+View(Data)
+
+#Removing punctuation and adding to lowercase 
+Data$Q10 <- tolower(Data$Q10)
+Data$Q10 <- removePunctuation(Data$Q10)
+
+
+#Initiatzing Dummy Vairables
+Data$Fox <- 0
+Data$NBC <- 0
+Data$CNN <- 0
+Data$ABC <- 0
+Data$NYT <- 0
+Data$FB <-0
+Data$twitter <- 0
+Data$insta <- 0
+
+#Checking if fox is present in response for FOX News dummy
+Data$Fox <- str_detect(string = Data$Q10,"fox")
+Data$Fox <- as.numeric(Data$Fox)
+
+#Checking if nbc is present in response for MSNBC News dummy
+Data$NBC <- str_detect(string = Data$Q10,"nbc")
+Data$NBC <- as.numeric(Data$NBC)
+
+#Checking if cnn is present in response for CNN News dummy
+Data$CNN <- str_detect(string = Data$Q10,"cnn")
+Data$CNN <- as.numeric(Data$CNN)
+
+#Checking if abc is present in response for ABC News dummy
+Data$ABC <- str_detect(string = Data$Q10,"abc")
+Data$ABC <- as.numeric(Data$ABC)
+
+#Checking if new york times is present in response for NYTdummy
+#Might have written nyt or newyorktime(check this in data)
+Data$NYT <- str_detect(string = Data$Q10,"new york times")
+Data$NYT <- as.numeric(Data$NYT)
+
+#Checking if facebook is present in response for  FB dummy
+#Might have written fe(check this in data)
+Data$FB <- str_detect(string = Data$Q10,"facebook")
+Data$FB <- as.numeric(Data$FB)
+
+#Checking if twitter is present in response for twitter dummy
+Data$twitter <- str_detect(string = Data$Q10,"twitter")
+Data$twitter <- as.numeric(Data$twitter)
+
+#Checking if insta is present in response for instagram dummy
+Data$insta <- str_detect(string = Data$Q10,"insta")
+Data$insta <- as.numeric(Data$insta)
+
+#Saving the File
+write.csv(Data,"Data_media_dummies.csv")
