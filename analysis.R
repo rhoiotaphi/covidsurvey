@@ -11,6 +11,7 @@ library(reshape2)
 library(jtools)
 library(broom.mixed)
 library(lattice)
+library('gtools')
 data <- read_csv("C:/Users/hemra/Downloads/data_clean.csv")
 
 #Coding different Groups in the Data
@@ -33,8 +34,7 @@ data$ethnicity <- ifelse(data$ethnicity>7,7,data$ethnicity)
 
 #Filtering low-attension out of the data
 data <- data[which(data$lowattention==0),]
-me
-means <- aggregate(value ~  group, data3, mean)
+
 
 #Summary Plot for Treatment Averages
 data2 <- data %>% select(group,treatment1, treatment2,treatment3,treatment4)
@@ -255,3 +255,191 @@ model5f <- lm(treatment4 ~ expertise + gain + fact + pid_scale + birth_year, dat
 summary(model5f)
 model5g <- lm(treatment4 ~ expertise + gain + fact + pid_scale + birth_year + fox, data5)
 summary(model5g)
+
+
+
+	
+#Function to do T-tests between Groups
+t1perm <- function(data,g1,g2){
+  t <- t.test(data$treatment1[which(data$group %in% g1)], data$treatment1[which(data$group %in% g2)])
+  delta <- list()
+  delta[[1]] <- paste(g1,collapse=",")
+  delta[[2]] <- paste(g2,collapse=",")
+  delta[[3]] <- length(data$treatment2[which(data$group %in% g1)])
+  delta[[4]] <- length(data$treatment1[which(data$group %in% g2)])
+  delta[[5]] <- t$estimate[1]
+  delta[[6]] <- t$estimate[2]
+  delta[[7]] <- t$p.value
+  return(delta)
+}
+dft1 <- data.frame(group1 = 1, group2 = 1, n_group1 = 1, n_group2 =1, mean_g1 =1, mean_g2 =1, p = 1)
+dft1[1,]<- rbind(unlist(t1perm(data,c(1:8),9)))
+dft1[2,]<- rbind(unlist(t1perm(data,c(1,2,3,4),9)))
+dft1[3,]<- rbind(unlist(t1perm(data,c(5,6,7,8),9)))
+dft1[4,]<- rbind(unlist(t1perm(data,c(1,2,5,6),9)))
+dft1[5,]<- rbind(unlist(t1perm(data,c(3,4,7,8),9)))
+dft1[6,]<- rbind(unlist(t1perm(data,c(1,3,5,7),9)))
+dft1[7,]<- rbind(unlist(t1perm(data,c(2,4,6,8),9)))
+dft1[8,]<- rbind(unlist(t1perm(data,c(5,6),9)))
+dft1[9,]<- rbind(unlist(t1perm(data,c(3,4),9)))
+dft1[10,]<- rbind(unlist(t1perm(data,c(7,8),9)))
+dft1[11,]<- rbind(unlist(t1perm(data,c(1,3),9)))
+dft1[12,]<- rbind(unlist(t1perm(data,c(2,4),9)))
+dft1[13,]<- rbind(unlist(t1perm(data,c(5,7),9)))
+dft1[14,]<- rbind(unlist(t1perm(data,c(6,8),9)))
+dft1[15,]<- rbind(unlist(t1perm(data,c(1,2,3,4),c(5,6,7,8))))
+dft1[16,]<- rbind(unlist(t1perm(data,c(1,2,5,6),c(3,4,7,8))))
+dft1[17,]<- rbind(unlist(t1perm(data,c(1,3,5,7),c(2,4,6,8))))
+dft1[18,]<- rbind(unlist(t1perm(data,c(1,2),c(5,6))))
+dft1[19,]<- rbind(unlist(t1perm(data,c(3,4),c(7,8))))
+dft1[20,]<- rbind(unlist(t1perm(data,c(1,3),c(2,4))))
+dft1[21,]<- rbind(unlist(t1perm(data,c(5,7),c(6,8))))
+
+p<-22
+#Single Group Comparisons
+for(i in 1:9){
+  for(j in 1:9){
+    dft1[p,] <- t1perm(data,i,j)
+    p <- p+1
+  }
+}
+
+
+#Function to do T-tests between Groups
+t2perm <- function(data,g1,g2){
+  t <- t.test(data$treatment2[which(data$group %in% g1)], data$treatment2[which(data$group %in% g2)])
+  delta <- list()
+  delta[[1]] <- paste(g1,collapse=",")
+  delta[[2]] <- paste(g2,collapse=",")
+  delta[[3]] <- length(data$treatment2[which(data$group %in% g1)])
+  delta[[4]] <- length(data$treatment2[which(data$group %in% g2)])
+  delta[[5]] <- t$estimate[1]
+  delta[[6]] <- t$estimate[2]
+  delta[[7]] <- t$p.value
+  return(delta)
+}
+dft2 <- data.frame(group1 = 1, group2 = 1, n_group1 = 1, n_group2 =1, mean_g1 =1, mean_g2 =1, p = 1)
+dft2[1,]<- rbind(unlist(t2perm(data,c(1:8),9)))
+dft2[2,]<- rbind(unlist(t2perm(data,c(1,2,3,4),9)))
+dft2[3,]<- rbind(unlist(t2perm(data,c(5,6,7,8),9)))
+dft2[4,]<- rbind(unlist(t2perm(data,c(1,2,5,6),9)))
+dft2[5,]<- rbind(unlist(t2perm(data,c(3,4,7,8),9)))
+dft2[6,]<- rbind(unlist(t2perm(data,c(1,3,5,7),9)))
+dft2[7,]<- rbind(unlist(t2perm(data,c(2,4,6,8),9)))
+dft2[8,]<- rbind(unlist(t2perm(data,c(5,6),9)))
+dft2[9,]<- rbind(unlist(t2perm(data,c(3,4),9)))
+dft2[10,]<- rbind(unlist(t2perm(data,c(7,8),9)))
+dft2[11,]<- rbind(unlist(t2perm(data,c(1,3),9)))
+dft2[12,]<- rbind(unlist(t2perm(data,c(2,4),9)))
+dft2[13,]<- rbind(unlist(t2perm(data,c(5,7),9)))
+dft2[14,]<- rbind(unlist(t2perm(data,c(6,8),9)))
+dft2[15,]<- rbind(unlist(t2perm(data,c(1,2,3,4),c(5,6,7,8))))
+dft2[16,]<- rbind(unlist(t2perm(data,c(1,2,5,6),c(3,4,7,8))))
+dft2[17,]<- rbind(unlist(t2perm(data,c(1,3,5,7),c(2,4,6,8))))
+dft2[18,]<- rbind(unlist(t2perm(data,c(1,2),c(5,6))))
+dft2[19,]<- rbind(unlist(t2perm(data,c(3,4),c(7,8))))
+dft2[20,]<- rbind(unlist(t2perm(data,c(1,3),c(2,4))))
+dft2[21,]<- rbind(unlist(t2perm(data,c(5,7),c(6,8))))
+
+p<-22
+#Single Group Comparisons
+for(i in 1:9){
+  for(j in 1:9){
+    dft2[p,] <- t2perm(data,i,j)
+    p <- p+1
+  }
+}
+
+#Function to do T-tests between Groups
+t3perm <- function(data,g1,g2){
+  t <- t.test(data$treatment3[which(data$group %in% g1)], data$treatment3[which(data$group %in% g2)])
+  delta <- list()
+  delta[[1]] <- paste(g1,collapse=",")
+  delta[[2]] <- paste(g2,collapse=",")
+  delta[[3]] <- length(data$treatment3[which(data$group %in% g1)])
+  delta[[4]] <- length(data$treatment3[which(data$group %in% g2)])
+  delta[[5]] <- t$estimate[1]
+  delta[[6]] <- t$estimate[2]
+  delta[[7]] <- t$p.value
+  return(delta)
+}
+dft3 <- data.frame(group1 = 1, group2 = 1, n_group1 = 1, n_group2 =1, mean_g1 =1, mean_g2 =1, p = 1)
+dft3[1,]<- rbind(unlist(t3perm(data,c(1:8),9)))
+dft3[2,]<- rbind(unlist(t3perm(data,c(1,2,3,4),9)))
+dft3[3,]<- rbind(unlist(t3perm(data,c(5,6,7,8),9)))
+dft3[4,]<- rbind(unlist(t3perm(data,c(1,2,5,6),9)))
+dft3[5,]<- rbind(unlist(t3perm(data,c(3,4,7,8),9)))
+dft3[6,]<- rbind(unlist(t3perm(data,c(1,3,5,7),9)))
+dft3[7,]<- rbind(unlist(t3perm(data,c(2,4,6,8),9)))
+dft3[8,]<- rbind(unlist(t3perm(data,c(5,6),9)))
+dft3[9,]<- rbind(unlist(t3perm(data,c(3,4),9)))
+dft3[10,]<- rbind(unlist(t3perm(data,c(7,8),9)))
+dft3[11,]<- rbind(unlist(t3perm(data,c(1,3),9)))
+dft3[12,]<- rbind(unlist(t3perm(data,c(2,4),9)))
+dft3[13,]<- rbind(unlist(t3perm(data,c(5,7),9)))
+dft3[14,]<- rbind(unlist(t3perm(data,c(6,8),9)))
+dft3[15,]<- rbind(unlist(t3perm(data,c(1,2,3,4),c(5,6,7,8))))
+dft3[16,]<- rbind(unlist(t3perm(data,c(1,2,5,6),c(3,4,7,8))))
+dft3[17,]<- rbind(unlist(t3perm(data,c(1,3,5,7),c(2,4,6,8))))
+dft3[18,]<- rbind(unlist(t3perm(data,c(1,2),c(5,6))))
+dft3[19,]<- rbind(unlist(t3perm(data,c(3,4),c(7,8))))
+dft3[20,]<- rbind(unlist(t3perm(data,c(1,3),c(2,4))))
+dft3[21,]<- rbind(unlist(t3perm(data,c(5,7),c(6,8))))
+
+p<-22
+#Single Group Comparisons
+for(i in 1:9){
+  for(j in 1:9){
+    dft3[p,] <- t3perm(data,i,j)
+    p <- p+1
+  }
+}
+
+#Function to do T-tests between Groups
+t4perm <- function(data,g1,g2){
+  t <- t.test(data$treatment4[which(data$group %in% g1)], data$treatment4[which(data$group %in% g2)])
+  delta <- list()
+  delta[[1]] <- paste(g1,collapse=",")
+  delta[[2]] <- paste(g2,collapse=",")
+  delta[[3]] <- length(data$treatment4[which(data$group %in% g1)])
+  delta[[4]] <- length(data$treatment4[which(data$group %in% g2)])
+  delta[[5]] <- t$estimate[1]
+  delta[[6]] <- t$estimate[2]
+  delta[[7]] <- t$p.value
+  return(delta)
+}
+dft4 <- data.frame(group1 = 1, group2 = 1, n_group1 = 1, n_group2 =1, mean_g1 =1, mean_g2 =1, p = 1)
+dft4[1,]<- rbind(unlist(t4perm(data,c(1:8),9)))
+dft4[2,]<- rbind(unlist(t4perm(data,c(1,2,3,4),9)))
+dft4[3,]<- rbind(unlist(t4perm(data,c(5,6,7,8),9)))
+dft4[4,]<- rbind(unlist(t4perm(data,c(1,2,5,6),9)))
+dft4[5,]<- rbind(unlist(t4perm(data,c(3,4,7,8),9)))
+dft4[6,]<- rbind(unlist(t4perm(data,c(1,3,5,7),9)))
+dft4[7,]<- rbind(unlist(t4perm(data,c(2,4,6,8),9)))
+dft4[8,]<- rbind(unlist(t4perm(data,c(5,6),9)))
+dft4[9,]<- rbind(unlist(t4perm(data,c(3,4),9)))
+dft4[10,]<- rbind(unlist(t4perm(data,c(7,8),9)))
+dft4[11,]<- rbind(unlist(t4perm(data,c(1,3),9)))
+dft4[12,]<- rbind(unlist(t4perm(data,c(2,4),9)))
+dft4[13,]<- rbind(unlist(t4perm(data,c(5,7),9)))
+dft4[14,]<- rbind(unlist(t4perm(data,c(6,8),9)))
+dft4[15,]<- rbind(unlist(t4perm(data,c(1,2,3,4),c(5,6,7,8))))
+dft4[16,]<- rbind(unlist(t4perm(data,c(1,2,5,6),c(3,4,7,8))))
+dft4[17,]<- rbind(unlist(t4perm(data,c(1,3,5,7),c(2,4,6,8))))
+dft4[18,]<- rbind(unlist(t4perm(data,c(1,2),c(5,6))))
+dft4[19,]<- rbind(unlist(t4perm(data,c(3,4),c(7,8))))
+dft4[20,]<- rbind(unlist(t4perm(data,c(1,3),c(2,4))))
+dft4[21,]<- rbind(unlist(t4perm(data,c(5,7),c(6,8))))
+
+p<-22
+#Single Group Comparisons
+for(i in 1:9){
+  for(j in 1:9){
+    dft4[p,] <- t4perm(data,i,j)
+    p <- p+1
+  }
+}
+
+
+dft<- rbind(dft1,dft2,dft3,dft4)
+write.csv(dft,"ttests.csv")
